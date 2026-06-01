@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface NoticeRepository extends JpaRepository<Notice, Long> {
 
-	Optional<Notice> findBySourceUrl(String sourceUrl);
+  Optional<Notice> findBySourceUrl(String sourceUrl);
 
-	boolean existsBySourceUrl(String sourceUrl);
+  boolean existsBySourceUrl(String sourceUrl);
 }
