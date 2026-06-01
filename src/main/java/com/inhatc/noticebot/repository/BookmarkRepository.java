@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
 
-	List<Bookmark> findByNotice_Id(Long noticeId);
+  List<Bookmark> findByNotice_Id(Long noticeId);
 }
