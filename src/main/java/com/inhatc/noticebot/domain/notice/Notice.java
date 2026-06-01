@@ -7,6 +7,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Lob;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import java.time.LocalDateTime;
@@ -140,5 +142,21 @@ public class Notice {
 
 	public void setUpdatedAt(LocalDateTime updatedAt) {
 		this.updatedAt = updatedAt;
+	}
+
+	@PrePersist
+	public void onCreate() {
+		LocalDateTime now = LocalDateTime.now();
+		if (this.crawledAt == null) {
+			this.crawledAt = now;
+		}
+		if (this.updatedAt == null) {
+			this.updatedAt = now;
+		}
+	}
+
+	@PreUpdate
+	public void onUpdate() {
+		this.updatedAt = LocalDateTime.now();
 	}
 }
