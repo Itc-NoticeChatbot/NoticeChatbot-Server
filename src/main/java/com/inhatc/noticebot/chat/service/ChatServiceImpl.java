@@ -10,7 +10,7 @@ import com.inhatc.noticebot.repository.ChatHistoryRepository;
 import com.inhatc.noticebot.repository.NoticeRepository;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @Service
 public class ChatServiceImpl implements ChatService {
@@ -18,18 +18,20 @@ public class ChatServiceImpl implements ChatService {
   private final NoticeRepository noticeRepository;
   private final ChatHistoryRepository chatHistoryRepository;
   private final GeminiClient geminiClient;
+  private final TransactionTemplate transactionTemplate;
 
   public ChatServiceImpl(
       NoticeRepository noticeRepository,
       ChatHistoryRepository chatHistoryRepository,
-      GeminiClient geminiClient) {
+      GeminiClient geminiClient,
+      TransactionTemplate transactionTemplate) {
     this.noticeRepository = noticeRepository;
     this.chatHistoryRepository = chatHistoryRepository;
     this.geminiClient = geminiClient;
+    this.transactionTemplate = transactionTemplate;
   }
 
   @Override
-  @Transactional
   public ChatAnswerResponse ask(AskChatRequest request) {
     String question = request.question();
 
@@ -41,8 +43,10 @@ public class ChatServiceImpl implements ChatService {
 
     String answer = generateAnswer(question, noticeContents);
 
-    chatHistoryRepository.save(
-        new ChatHistory(question, answer, convertToJson(relatedNoticeIds), null));
+    transactionTemplate.executeWithoutResult(
+        status ->
+            chatHistoryRepository.save(
+                new ChatHistory(question, answer, convertToJson(relatedNoticeIds), null)));
 
     return new ChatAnswerResponse(answer, relatedNoticeIds);
   }
