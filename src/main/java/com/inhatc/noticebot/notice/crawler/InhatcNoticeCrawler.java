@@ -26,10 +26,8 @@ public class InhatcNoticeCrawler {
   private static final String SEED_URL = "https://www.inhatc.ac.kr/kr/460/subview.do";
   private static final Pattern ARTICLE_URL_PATTERN =
       Pattern.compile("^https://www\\.inhatc\\.ac\\.kr/bbs/kr/11/\\d+/artclView\\.do.*$");
-  private static final String BASE_URL = "https://www.inhatc.ac.kr";
   private static final int CONNECT_TIMEOUT_MS = 5_000;
-  private static final int READ_TIMEOUT_MS = 8_000;
-  private static final int MAX_RETRY = 2;
+  private static final int MAX_RETRY_COUNT = 2;
 
   public List<CrawledNotice> crawlAll() {
     Document seedDoc = fetchWithRetry(SEED_URL);
@@ -86,7 +84,8 @@ public class InhatcNoticeCrawler {
   private LocalDateTime parseDate(String dateText) {
     if (dateText == null || dateText.isEmpty()) return null;
     String cleaned = dateText.replaceAll("\\.$", "").strip();
-    for (String pattern : new String[] {"yyyy-MM-dd", "yyyy.MM.dd"}) {
+    List<String> patterns = List.of("yyyy-MM-dd", "yyyy.MM.dd");
+    for (String pattern : patterns) {
       try {
         return LocalDateTime.parse(
             cleaned + " 00:00", DateTimeFormatter.ofPattern(pattern + " HH:mm"));
@@ -98,12 +97,12 @@ public class InhatcNoticeCrawler {
 
   private Document fetchWithRetry(String url) {
     int attempts = 0;
-    while (attempts <= MAX_RETRY) {
+    while (attempts <= MAX_RETRY_COUNT) {
       try {
         return Jsoup.connect(url).timeout(CONNECT_TIMEOUT_MS).maxBodySize(0).get();
       } catch (IOException ex) {
         attempts++;
-        if (attempts > MAX_RETRY) {
+        if (attempts > MAX_RETRY_COUNT) {
           throw new CrawlSourceUnreachableException(url);
         }
         long backoff = (long) Math.pow(2, attempts) * 500;
