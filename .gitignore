@@ -38,3 +38,6 @@ out/
 
 # Local review artifacts
 .tmp/
+
+# macOS
+.DS_Store

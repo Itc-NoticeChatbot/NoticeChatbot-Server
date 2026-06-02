@@ -16,8 +16,8 @@
 - Language: Java 17
 - Framework: Spring Boot 3.4.6
 - Build Tool: Gradle (Kotlin DSL)
-- Data Access: Spring Data JPA (planned)
-- DB: MySQL (planned)
+- Data Access: Spring Data JPA
+- DB: MySQL
 - HTML Parsing: Jsoup (planned)
 - AI Integration: Gemini API (planned)
 
@@ -29,6 +29,13 @@
 - Follow the Git convention (commit & PR) in `docs/rules/git-convention.md`
 - @docs/rules/git-convention.md
 
+## Server Task Docs
+- Treat this repository's `docs/` directory as the source of truth for server work.
+- Task order: `docs/server-task/server-task-order.md`
+- Gate specs: `docs/server-task/gate/`
+- Weekly course notes: `docs/server-weekly/`
+- Do not rely on workspace-level parent-folder docs for team-facing server work.
+
 ## Work Policy
 - 작업 시작 전 변경 범위와 영향 레이어(Controller/Service/Repository)를 먼저 공유한다.
 - 작업 완료 후 `./gradlew test` 또는 `./gradlew build`로 검증한다.
@@ -36,4 +43,6 @@
 
 ## Local Branch Review
 - Branch review skill: `skills/branch-review/SKILL.md`
+- Issue/branch planning skill: `skills/issue-branch-task-planner/SKILL.md`
+- Notion task breakdown skill: `skills/notion-server-task-breakdown/SKILL.md`
 - 리뷰 기준 브랜치: `origin/develop`
