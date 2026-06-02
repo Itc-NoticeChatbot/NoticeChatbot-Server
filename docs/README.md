@@ -5,6 +5,7 @@ This directory is the source of truth for server-side planning, rules, and task 
 ## Main Docs
 - `server-task/server-task-order.md`: Current server task order, gate status, and next implementation queue
 - `server-task/gate/`: Pre-implementation gate decisions for DB, schema, crawling, and API response format
+  - Includes bookmark schema handoff memo for `dev`/`prod` DB validation environments
 - `server-weekly/`: Weekly class concept notes used as project references
 - `rules/`: Team coding and Git conventions
 

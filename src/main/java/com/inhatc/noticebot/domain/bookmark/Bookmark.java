@@ -12,11 +12,15 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(
     name = "bookmarks",
+    uniqueConstraints = {
+      @UniqueConstraint(name = "uq_bookmarks_notice_question", columnNames = {"notice_id", "question"})
+    },
     indexes = {@Index(name = "idx_bookmarks_notice_id", columnList = "notice_id")})
 public class Bookmark {
 
