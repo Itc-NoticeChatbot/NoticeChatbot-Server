@@ -11,6 +11,7 @@ import com.inhatc.noticebot.repository.BookmarkRepository;
 import com.inhatc.noticebot.repository.NoticeRepository;
 import java.util.List;
 import org.springframework.data.domain.Sort;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,9 +38,13 @@ public class BookmarkServiceImpl implements BookmarkService {
       throw new BookmarkDuplicatedException(request.noticeId(), request.question());
     }
 
-    Bookmark bookmark = new Bookmark(notice, request.question(), null);
-    Bookmark savedBookmark = bookmarkRepository.save(bookmark);
-    return BookmarkResponse.convert(savedBookmark);
+    try {
+      Bookmark bookmark = new Bookmark(notice, request.question(), null);
+      Bookmark savedBookmark = bookmarkRepository.saveAndFlush(bookmark);
+      return BookmarkResponse.convert(savedBookmark);
+    } catch (DataIntegrityViolationException ex) {
+      throw new BookmarkDuplicatedException(request.noticeId(), request.question());
+    }
   }
 
   @Override

@@ -29,6 +29,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Sort;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
@@ -65,7 +66,7 @@ class BookmarkServiceImplTest {
 
     when(noticeRepository.findById(1L)).thenReturn(Optional.of(notice));
     when(bookmarkRepository.existsByNotice_IdAndQuestion(1L, request.question())).thenReturn(false);
-    when(bookmarkRepository.save(any(Bookmark.class)))
+    when(bookmarkRepository.saveAndFlush(any(Bookmark.class)))
         .thenAnswer(
             invocation -> {
               Bookmark bookmark = invocation.getArgument(0);
@@ -75,7 +76,7 @@ class BookmarkServiceImplTest {
 
     BookmarkResponse response = bookmarkService.create(request);
 
-    verify(bookmarkRepository).save(bookmarkCaptor.capture());
+    verify(bookmarkRepository).saveAndFlush(bookmarkCaptor.capture());
     Bookmark savedBookmark = bookmarkCaptor.getValue();
     assertThat(savedBookmark.getNotice()).isSameAs(notice);
     assertThat(savedBookmark.getQuestion()).isEqualTo(request.question());
@@ -104,6 +105,19 @@ class BookmarkServiceImplTest {
     assertThatThrownBy(() -> bookmarkService.create(request))
         .isInstanceOf(BookmarkDuplicatedException.class);
     verify(bookmarkRepository, never()).save(any(Bookmark.class));
+  }
+
+  @Test
+  void create_throwsException_whenUniqueConstraintFailsDuringSave() {
+    CreateBookmarkRequest request = new CreateBookmarkRequest(1L, "동시 요청 질문");
+
+    when(noticeRepository.findById(1L)).thenReturn(Optional.of(notice));
+    when(bookmarkRepository.existsByNotice_IdAndQuestion(1L, request.question())).thenReturn(false);
+    when(bookmarkRepository.saveAndFlush(any(Bookmark.class)))
+        .thenThrow(new DataIntegrityViolationException("duplicate key"));
+
+    assertThatThrownBy(() -> bookmarkService.create(request))
+        .isInstanceOf(BookmarkDuplicatedException.class);
   }
 
   @Test
