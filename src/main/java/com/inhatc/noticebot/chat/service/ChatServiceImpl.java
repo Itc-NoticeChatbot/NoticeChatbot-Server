@@ -3,13 +3,16 @@ package com.inhatc.noticebot.chat.service;
 import com.inhatc.noticebot.chat.client.GeminiClient;
 import com.inhatc.noticebot.chat.dto.AskChatRequest;
 import com.inhatc.noticebot.chat.dto.ChatAnswerResponse;
+import com.inhatc.noticebot.chat.dto.ChatHistoryResponse;
 import com.inhatc.noticebot.domain.chat.ChatHistory;
 import com.inhatc.noticebot.domain.chat.exception.AiResponseFailedException;
+import com.inhatc.noticebot.domain.chat.exception.ChatHistoryNotFoundException;
 import com.inhatc.noticebot.domain.notice.Notice;
 import com.inhatc.noticebot.repository.ChatHistoryRepository;
 import com.inhatc.noticebot.repository.NoticeRepository;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
 @Service
@@ -29,6 +32,22 @@ public class ChatServiceImpl implements ChatService {
     this.chatHistoryRepository = chatHistoryRepository;
     this.geminiClient = geminiClient;
     this.transactionTemplate = transactionTemplate;
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public List<ChatHistoryResponse> getHistories() {
+    return chatHistoryRepository.findTop20ByOrderByCreatedAtDesc().stream()
+        .map(ChatHistoryResponse::convert)
+        .toList();
+  }
+
+  @Override
+  @Transactional
+  public void deleteHistory(Long id) {
+    ChatHistory chatHistory =
+        chatHistoryRepository.findById(id).orElseThrow(() -> new ChatHistoryNotFoundException(id));
+    chatHistoryRepository.delete(chatHistory);
   }
 
   @Override
