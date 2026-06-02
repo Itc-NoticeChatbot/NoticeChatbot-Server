@@ -2,8 +2,10 @@ package com.inhatc.noticebot.chat.dto;
 
 import com.inhatc.noticebot.domain.chat.ChatHistory;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public record ChatHistoryResponse(
     Long id, String question, String answer, List<Long> relatedNoticeIds, LocalDateTime createdAt) {
@@ -33,6 +35,19 @@ public record ChatHistoryResponse(
       return Collections.emptyList();
     }
 
-    return List.of(normalized.split(",")).stream().map(String::trim).map(Long::valueOf).toList();
+    return Arrays.stream(normalized.split(","))
+        .map(String::trim)
+        .filter(token -> !token.isBlank())
+        .map(ChatHistoryResponse::parseRelatedNoticeId)
+        .filter(Objects::nonNull)
+        .toList();
+  }
+
+  private static Long parseRelatedNoticeId(String token) {
+    try {
+      return Long.valueOf(token);
+    } catch (NumberFormatException ex) {
+      return null;
+    }
   }
 }

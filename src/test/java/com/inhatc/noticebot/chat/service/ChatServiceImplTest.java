@@ -61,6 +61,21 @@ class ChatServiceImplTest {
   }
 
   @Test
+  void getHistories_ignoresMalformedRelatedNoticeIds() {
+    ChatHistory malformedHistory =
+        new ChatHistory(
+            "파싱 질문", "파싱 답변", "[1, invalid, 3, , text]", LocalDateTime.of(2026, 6, 2, 12, 0));
+    ReflectionTestUtils.setField(malformedHistory, "id", 5L);
+
+    when(chatHistoryRepository.findTop20ByOrderByCreatedAtDesc()).thenReturn(List.of(malformedHistory));
+
+    List<ChatHistoryResponse> response = chatService.getHistories();
+
+    assertThat(response).hasSize(1);
+    assertThat(response.get(0).relatedNoticeIds()).containsExactly(1L, 3L);
+  }
+
+  @Test
   void deleteHistory_deletesHistory_whenItExists() {
     ChatHistory chatHistory =
         new ChatHistory("질문", "답변", "[1]", LocalDateTime.of(2026, 6, 2, 12, 0));
