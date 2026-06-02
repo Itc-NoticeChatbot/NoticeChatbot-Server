@@ -3,7 +3,6 @@ package com.inhatc.noticebot.chat.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -22,7 +21,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Sort;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -50,11 +48,12 @@ class ChatServiceImplTest {
         new ChatHistory("이전 질문", "이전 답변", "[]", LocalDateTime.of(2026, 6, 1, 12, 0));
     ReflectionTestUtils.setField(olderHistory, "id", 1L);
 
-    when(chatHistoryRepository.findAll(any(Sort.class))).thenReturn(List.of(recentHistory, olderHistory));
+    when(chatHistoryRepository.findTop20ByOrderByCreatedAtDesc())
+        .thenReturn(List.of(recentHistory, olderHistory));
 
     List<ChatHistoryResponse> response = chatService.getHistories();
 
-    verify(chatHistoryRepository).findAll(eq(Sort.by(Sort.Direction.DESC, "createdAt")));
+    verify(chatHistoryRepository).findTop20ByOrderByCreatedAtDesc();
     assertThat(response).hasSize(2);
     assertThat(response.get(0).id()).isEqualTo(2L);
     assertThat(response.get(0).relatedNoticeIds()).containsExactly(1L, 2L, 3L);
