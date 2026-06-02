@@ -5,7 +5,7 @@ import com.inhatc.noticebot.common.exception.ErrorCode;
 
 public class NoticeDuplicatedException extends DomainException {
 
-	public NoticeDuplicatedException(String sourceUrl) {
-		super(ErrorCode.NOTICE_DUPLICATED, "중복된 공지 URL입니다: " + sourceUrl);
-	}
+  public NoticeDuplicatedException(String sourceUrl) {
+    super(ErrorCode.NOTICE_DUPLICATED, "중복된 공지 URL입니다: " + sourceUrl);
+  }
 }
