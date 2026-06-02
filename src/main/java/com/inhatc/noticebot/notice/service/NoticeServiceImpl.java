@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @Service
 public class NoticeServiceImpl implements NoticeService {
@@ -22,17 +23,38 @@ public class NoticeServiceImpl implements NoticeService {
 
   private final InhatcNoticeCrawler crawler;
   private final NoticeRepository noticeRepository;
+  private final TransactionTemplate transactionTemplate;
 
-  public NoticeServiceImpl(InhatcNoticeCrawler crawler, NoticeRepository noticeRepository) {
+  public NoticeServiceImpl(
+      InhatcNoticeCrawler crawler,
+      NoticeRepository noticeRepository,
+      TransactionTemplate transactionTemplate) {
     this.crawler = crawler;
     this.noticeRepository = noticeRepository;
+    this.transactionTemplate = transactionTemplate;
   }
 
   @Override
-  @Transactional
   public CrawlResultResponse crawlAndSave() {
     List<CrawledNotice> crawled = crawler.crawlAll();
+    return transactionTemplate.execute(status -> saveAll(crawled));
+  }
 
+  @Override
+  @Transactional(readOnly = true)
+  public List<NoticeResponse> getList() {
+    return noticeRepository.findAll().stream().map(NoticeResponse::convert).toList();
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public NoticeResponse get(Long id) {
+    Notice notice =
+        noticeRepository.findById(id).orElseThrow(() -> new NoticeNotFoundException(id));
+    return NoticeResponse.convert(notice);
+  }
+
+  private CrawlResultResponse saveAll(List<CrawledNotice> crawled) {
     int saved = 0;
     int updated = 0;
     int skipped = 0;
@@ -62,20 +84,6 @@ public class NoticeServiceImpl implements NoticeService {
     log.info(
         "크롤링 완료 - saved={}, updated={}, skipped={}, failed={}", saved, updated, skipped, failed);
     return CrawlResultResponse.of(saved, updated, skipped, failed);
-  }
-
-  @Override
-  @Transactional(readOnly = true)
-  public List<NoticeResponse> getList() {
-    return noticeRepository.findAll().stream().map(NoticeResponse::convert).toList();
-  }
-
-  @Override
-  @Transactional(readOnly = true)
-  public NoticeResponse get(Long id) {
-    Notice notice =
-        noticeRepository.findById(id).orElseThrow(() -> new NoticeNotFoundException(id));
-    return NoticeResponse.convert(notice);
   }
 
   private boolean hasChanged(Notice existing, CrawledNotice incoming) {
