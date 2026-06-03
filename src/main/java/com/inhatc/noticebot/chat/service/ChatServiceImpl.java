@@ -10,7 +10,10 @@ import com.inhatc.noticebot.domain.chat.exception.ChatHistoryNotFoundException;
 import com.inhatc.noticebot.domain.notice.Notice;
 import com.inhatc.noticebot.repository.ChatHistoryRepository;
 import com.inhatc.noticebot.repository.NoticeRepository;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -54,8 +57,7 @@ public class ChatServiceImpl implements ChatService {
   public ChatAnswerResponse ask(AskChatRequest request) {
     String question = request.question();
 
-    List<Notice> relatedNotices =
-        noticeRepository.findByTitleContainingOrContentContaining(question, question);
+    List<Notice> relatedNotices = searchRelatedNotices(question);
 
     List<String> noticeContents = relatedNotices.stream().map(Notice::getContent).toList();
     List<Long> relatedNoticeIds = relatedNotices.stream().map(Notice::getId).toList();
@@ -68,6 +70,18 @@ public class ChatServiceImpl implements ChatService {
                 new ChatHistory(question, answer, convertToJson(relatedNoticeIds), null)));
 
     return new ChatAnswerResponse(answer, relatedNoticeIds);
+  }
+
+  private List<Notice> searchRelatedNotices(String question) {
+    Map<Long, Notice> noticeMap = new LinkedHashMap<>();
+    Arrays.stream(question.split("\\s+"))
+        .filter(keyword -> keyword.length() >= 2)
+        .forEach(
+            keyword ->
+                noticeRepository
+                    .findByTitleContainingOrContentContaining(keyword, keyword)
+                    .forEach(notice -> noticeMap.put(notice.getId(), notice)));
+    return new java.util.ArrayList<>(noticeMap.values());
   }
 
   private String generateAnswer(String question, List<String> noticeContents) {
