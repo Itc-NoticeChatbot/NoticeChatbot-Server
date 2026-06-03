@@ -1,8 +1,10 @@
 package com.inhatc.noticebot.chat.client;
 
 import java.util.List;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+@Profile("test")
 @Component
 public class StubGeminiClient implements GeminiClient {
 

@@ -26,6 +26,8 @@ dependencies {
 	implementation("org.jsoup:jsoup:1.17.2")
 	runtimeOnly("com.mysql:mysql-connector-j")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
+	testImplementation("com.squareup.okhttp3:okhttp:4.12.0")
 	testRuntimeOnly("com.h2database:h2")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
