@@ -18,7 +18,7 @@ import org.springframework.web.client.RestClientException;
 public class GeminiClientImpl implements GeminiClient {
 
   private static final Logger log = LoggerFactory.getLogger(GeminiClientImpl.class);
-  private static final String API_PATH = "/v1beta/models/gemini-pro:generateContent";
+  private static final String API_PATH = "/v1beta/models/gemini-2.5-flash:generateContent";
 
   private final RestClient restClient;
   private final GeminiProperties properties;
