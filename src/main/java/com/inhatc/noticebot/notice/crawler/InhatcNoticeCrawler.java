@@ -22,10 +22,13 @@ public class InhatcNoticeCrawler {
 
   private static final Logger log = LoggerFactory.getLogger(InhatcNoticeCrawler.class);
 
-  private static final String SOURCE_SITE = "inhatc";
-  private static final String SEED_URL = "https://www.inhatc.ac.kr/kr/460/subview.do";
+  private static final String SOURCE_SITE = "inhatc-cs";
+  private static final String SEED_URL =
+      "https://cs.inhatc.ac.kr/cs/1754/subview.do?enc=Zm5jdDF8QEB8JTJGYmJzJTJGY3MlMkYxMDQlMkZhcnRjbExpc3QuZG8lM0Y%3D";
   private static final Pattern ARTICLE_URL_PATTERN =
-      Pattern.compile("^https://www\\.inhatc\\.ac\\.kr/bbs/kr/11/\\d+/artclView\\.do.*$");
+      Pattern.compile("^https://cs\\.inhatc\\.ac\\.kr/bbs/cs/104/\\d+/artclView\\.do.*$");
+  private static final String USER_AGENT =
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
   private static final int CONNECT_TIMEOUT_MS = 5_000;
   private static final int MAX_RETRY_COUNT = 2;
 
@@ -61,10 +64,10 @@ public class InhatcNoticeCrawler {
 
   private CrawledNotice parse(String url, Document doc) {
     try {
-      String title = doc.select(".artclViewTitle, h3.tit").text().strip();
-      String content = doc.select(".artclView, .view_con").text().strip();
-      String category = doc.select(".artclViewBrdNm, .category").text().strip();
-      String dateText = doc.select(".artclViewWrDt, .date").text().strip();
+      String title = doc.select(".view-title").text().strip();
+      String content = doc.select(".view-con").text().strip();
+      String category = doc.select(".view-detail .category").text().strip();
+      String dateText = doc.select("dl.writer dd").text().strip();
 
       if (title.isEmpty() || content.isEmpty()) {
         throw new CrawlParseFailedException(url);
@@ -99,7 +102,7 @@ public class InhatcNoticeCrawler {
     int attempts = 0;
     while (attempts <= MAX_RETRY_COUNT) {
       try {
-        return Jsoup.connect(url).timeout(CONNECT_TIMEOUT_MS).maxBodySize(0).get();
+        return Jsoup.connect(url).userAgent(USER_AGENT).timeout(CONNECT_TIMEOUT_MS).maxBodySize(0).get();
       } catch (IOException ex) {
         attempts++;
         if (attempts > MAX_RETRY_COUNT) {

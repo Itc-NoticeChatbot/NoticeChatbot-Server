@@ -24,7 +24,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14")
 	implementation("org.jsoup:jsoup:1.17.2")
-	runtimeOnly("com.mysql:mysql-connector-j")
+	runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
 	testImplementation("com.squareup.okhttp3:okhttp:4.12.0")
