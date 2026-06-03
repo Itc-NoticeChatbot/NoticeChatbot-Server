@@ -10,8 +10,8 @@ import com.inhatc.noticebot.domain.notice.exception.NoticeNotFoundException;
 import com.inhatc.noticebot.repository.BookmarkRepository;
 import com.inhatc.noticebot.repository.NoticeRepository;
 import java.util.List;
-import org.springframework.data.domain.Sort;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +21,8 @@ public class BookmarkServiceImpl implements BookmarkService {
   private final BookmarkRepository bookmarkRepository;
   private final NoticeRepository noticeRepository;
 
-  public BookmarkServiceImpl(BookmarkRepository bookmarkRepository, NoticeRepository noticeRepository) {
+  public BookmarkServiceImpl(
+      BookmarkRepository bookmarkRepository, NoticeRepository noticeRepository) {
     this.bookmarkRepository = bookmarkRepository;
     this.noticeRepository = noticeRepository;
   }

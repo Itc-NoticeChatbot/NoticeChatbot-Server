@@ -19,7 +19,9 @@ import java.time.LocalDateTime;
 @Table(
     name = "bookmarks",
     uniqueConstraints = {
-      @UniqueConstraint(name = "uq_bookmarks_notice_question", columnNames = {"notice_id", "question"})
+      @UniqueConstraint(
+          name = "uq_bookmarks_notice_question",
+          columnNames = {"notice_id", "question"})
     },
     indexes = {@Index(name = "idx_bookmarks_notice_id", columnList = "notice_id")})
 public class Bookmark {
