@@ -9,8 +9,7 @@ public enum ErrorCode {
   NOTICE_DUPLICATED(HttpStatus.CONFLICT, "NOTICE_DUPLICATED", "중복된 공지 데이터입니다."),
   BOOKMARK_NOT_FOUND(HttpStatus.NOT_FOUND, "BOOKMARK_NOT_FOUND", "북마크 데이터를 찾을 수 없습니다."),
   BOOKMARK_DUPLICATED(HttpStatus.CONFLICT, "BOOKMARK_DUPLICATED", "중복된 북마크 데이터입니다."),
-  CHAT_HISTORY_NOT_FOUND(
-      HttpStatus.NOT_FOUND, "CHAT_HISTORY_NOT_FOUND", "대화 이력 데이터를 찾을 수 없습니다."),
+  CHAT_HISTORY_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT_HISTORY_NOT_FOUND", "대화 이력 데이터를 찾을 수 없습니다."),
   CRAWL_SOURCE_UNREACHABLE(
       HttpStatus.SERVICE_UNAVAILABLE, "CRAWL_SOURCE_UNREACHABLE", "크롤링 대상에 접근할 수 없습니다."),
   CRAWL_PARSE_FAILED(HttpStatus.SERVICE_UNAVAILABLE, "CRAWL_PARSE_FAILED", "크롤링 파싱에 실패했습니다."),

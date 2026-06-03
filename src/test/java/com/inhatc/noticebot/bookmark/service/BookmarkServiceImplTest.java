@@ -28,8 +28,8 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Sort;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
@@ -91,7 +91,8 @@ class BookmarkServiceImplTest {
 
     when(noticeRepository.findById(99L)).thenReturn(Optional.empty());
 
-    assertThatThrownBy(() -> bookmarkService.create(request)).isInstanceOf(NoticeNotFoundException.class);
+    assertThatThrownBy(() -> bookmarkService.create(request))
+        .isInstanceOf(NoticeNotFoundException.class);
     verify(bookmarkRepository, never()).save(any(Bookmark.class));
   }
 
@@ -128,7 +129,8 @@ class BookmarkServiceImplTest {
     Bookmark olderBookmark = new Bookmark(notice, "이전 질문", LocalDateTime.of(2026, 6, 1, 10, 0));
     ReflectionTestUtils.setField(olderBookmark, "id", 1L);
 
-    when(bookmarkRepository.findAll(any(Sort.class))).thenReturn(List.of(newerBookmark, olderBookmark));
+    when(bookmarkRepository.findAll(any(Sort.class)))
+        .thenReturn(List.of(newerBookmark, olderBookmark));
 
     List<BookmarkResponse> response = bookmarkService.getList();
 
@@ -142,7 +144,8 @@ class BookmarkServiceImplTest {
   void delete_throwsException_whenBookmarkDoesNotExist() {
     when(bookmarkRepository.findById(5L)).thenReturn(Optional.empty());
 
-    assertThatThrownBy(() -> bookmarkService.delete(5L)).isInstanceOf(BookmarkNotFoundException.class);
+    assertThatThrownBy(() -> bookmarkService.delete(5L))
+        .isInstanceOf(BookmarkNotFoundException.class);
     verify(bookmarkRepository, never()).delete(any(Bookmark.class));
   }
 }
